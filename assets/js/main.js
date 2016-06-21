@@ -139,6 +139,7 @@
 
 			// Events.
 			// Note: If you're *not* using AJAX, get rid of this event listener.
+			/* NN: Using formspree.io instead
 				$form.addEventListener('submit', function(event) {
 
 					event.stopPropagation();
@@ -168,6 +169,7 @@
 						}, 750);
 
 				});
+				*/
 
 		})();
 
