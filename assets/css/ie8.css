@@ -1,66 +1,27 @@
 /*
-	Landscape by Pixelarity
-	pixelarity.com @pixelarity
+	Eventually by Pixelarity
+	html5up.net | @ajlkn
 	License: pixelarity.com/license
 */
 
-/* Button */
+/* BG */
 
-	input[type="submit"],
-	input[type="reset"],
-	input[type="button"],
-	button,
-	.button {
-		border-color: inherit !important;
+	#bg {
+		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
 	}
 
-		input[type="submit"].next,
-		input[type="reset"].next,
-		input[type="button"].next,
-		button.next,
-		.button.next {
-			padding-right: 2.5em;
-		}
+/* Type */
 
-			input[type="submit"].next:after,
-			input[type="reset"].next:after,
-			input[type="button"].next:after,
-			button.next:after,
-			.button.next:after {
-				display: none;
-			}
+	body, input, select, textarea {
+		color: #fff;
+	}
 
 /* Form */
-
-	form .field {
-		float: none;
-		padding-left: 0 !important;
-	}
 
 	input[type="text"],
 	input[type="password"],
 	input[type="email"],
 	select,
 	textarea {
-		border-color: inherit !important;
-	}
-
-/* Main */
-
-	#main .slide:before {
-		display: none;
-	}
-
-	#main nav > * {
-		line-height: 2.25em;
-		width: auto;
-		padding: 0 2em;
-	}
-
-	#main nav > .next:before {
-		content: 'Next';
-	}
-
-	#main nav > .previous:before {
-		content: 'Prev';
+		border: solid 2px #fff;
 	}

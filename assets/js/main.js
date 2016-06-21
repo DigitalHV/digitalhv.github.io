@@ -1,336 +1,174 @@
 /*
-	Landscape by Pixelarity
-	pixelarity.com @pixelarity
+	Eventually by Pixelarity
+	html5up.net | @ajlkn
 	License: pixelarity.com/license
 */
 
-$(function() {
+(function() {
 
 	"use strict";
 
-	// Settings.
-		var settings = {
-			parallax: true,
-			speed: 1250
-		};
+	// Methods/polyfills.
+
+		// classList | (c) @remy | github.com/remy/polyfills | rem.mit-license.org
+			!function(){function t(t){this.el=t;for(var n=t.className.replace(/^\s+|\s+$/g,"").split(/\s+/),i=0;i<n.length;i++)e.call(this,n[i])}function n(t,n,i){Object.defineProperty?Object.defineProperty(t,n,{get:i}):t.__defineGetter__(n,i)}if(!("undefined"==typeof window.Element||"classList"in document.documentElement)){var i=Array.prototype,e=i.push,s=i.splice,o=i.join;t.prototype={add:function(t){this.contains(t)||(e.call(this,t),this.el.className=this.toString())},contains:function(t){return-1!=this.el.className.indexOf(t)},item:function(t){return this[t]||null},remove:function(t){if(this.contains(t)){for(var n=0;n<this.length&&this[n]!=t;n++);s.call(this,n,1),this.el.className=this.toString()}},toString:function(){return o.call(this," ")},toggle:function(t){return this.contains(t)?this.remove(t):this.add(t),this.contains(t)}},window.DOMTokenList=t,n(Element.prototype,"classList",function(){return new t(this)})}}();
+
+		// canUse
+			window.canUse=function(p){if(!window._canUse)window._canUse=document.createElement("div");var e=window._canUse.style,up=p.charAt(0).toUpperCase()+p.slice(1);return p in e||"Moz"+up in e||"Webkit"+up in e||"O"+up in e||"ms"+up in e};
+
+		// window.addEventListener
+			(function(){if("addEventListener"in window)return;window.addEventListener=function(type,f){window.attachEvent("on"+type,f)}})();
 
 	// Vars.
-		var	$window = $(window),
-			$body = $('body');
-
-	// Breakpoints.
-		skel.breakpoints({
-			xlarge:	'(max-width: 1680px)',
-			large:	'(max-width: 1280px)',
-			medium:	'(max-width: 980px)',
-			small:	'(max-width: 736px)',
-			xsmall:	'(max-width: 480px)'
-		});
+		var	$body = document.querySelector('body');
 
 	// Disable animations/transitions until everything's loaded.
-		$body.addClass('is-loading');
+		$body.classList.add('is-loading');
 
-		$window.on('load', function() {
-			setTimeout(function() {
-				$body.removeClass('is-loading');
-			}, 250);
+		window.addEventListener('load', function() {
+			window.setTimeout(function() {
+				$body.classList.remove('is-loading');
+			}, 100);
 		});
 
-	// Forms.
-		var $form = $('form');
-
-		// Events.
-			$('input,textarea,select').on('keydown', function(event) {
-				event.stopPropagation();
-			});
-
-		// Fix: Placeholder polyfill.
-			$form.placeholder();
-
-	// Touch?
-		if (skel.vars.touch)
-			$body.addClass('is-touch');
-
-	// Main.
+	// Slideshow Background.
 		(function() {
 
-			var	$nav = $('#nav'),
-				$navItems = $nav.find('> ul > li'),
-				$main = $('#main'),
-				$reel = $main.children('.reel'),
-				$slides = $reel.children('.slide'),
-				$controls = $('<nav><span class="previous"></span><span class="next"></span></nav>').appendTo($main),
-				$next = $controls.children('.next'),
-				$previous = $controls.children('.previous'),
-				pos = 0,
-				locked = false;
+			// Settings.
+				var settings = {
 
-			// Switch function.
-				var switchTo = function(newPos, instant) {
+					// Images (in the format of 'url': 'alignment').
+						images: {
+							'images/bg01.jpg': 'center',
+							'images/bg02.jpg': 'center',
+							'images/bg03.jpg': 'center'
+						},
 
-					var $slide, $navItem, left;
-
-					// Out of bounds? Bail.
-						if (newPos < 0
-						||	newPos >= $slides.length)
-							return;
-
-					// Deal with lock.
-						if (instant !== true) {
-
-							if (locked)
-								return;
-
-							locked = true;
-
-						}
-
-					// Update position.
-						pos = newPos;
-						left = $slides.width() * pos;
-
-					// Update nav.
-
-						// Clear active state.
-							$navItems
-								.removeClass('active');
-
-						// Get new item and activate it.
-							$navItem = $navItems.eq(pos);
-
-							$navItem
-								.addClass('active');
-
-					// Update slides.
-
-						// Clear active state.
-							$slides
-								.removeClass('active');
-
-						// Get new slide and activate it.
-							$slide = $slides.eq(pos);
-
-							$slide
-								.addClass('active');
-
-					// Update controls.
-
-						// Previous.
-							if (pos == 0)
-								$previous.addClass('disabled');
-							else
-								$previous.removeClass('disabled');
-
-						// Next.
-							if (pos == $slides.length - 1)
-								$next.addClass('disabled');
-							else
-								$next.removeClass('disabled');
-
-					// Not instant? Animate to new scroll position.
-						if (instant !== true) {
-
-							$main.animate({
-								scrollLeft: left
-							}, settings.speed, 'swing', function() {
-								locked = false;
-							});
-
-						}
-
-					// Otherwise, jump straight to new scroll position.
-						else
-							$main.scrollLeft(left);
+					// Delay.
+						delay: 6000
 
 				};
 
-			// Reel.
-				$reel
-					.css('width', (100 * $slides.length) + 'vw');
+			// Vars.
+				var	pos = 0, lastPos = 0,
+					$wrapper, $bgs = [], $bg,
+					k, v;
 
-			// Slides.
-				$slides.each(function() {
+			// Create BG wrapper, BGs.
+				$wrapper = document.createElement('div');
+					$wrapper.id = 'bg';
+					$body.appendChild($wrapper);
 
-					var $this = $(this),
-						$img = $this.children('img'),
-						id = $this.attr('id'),
-						position = $img.data('position'),
-						bg = {
-							image: $this.css('background-image'),
-							size: $this.css('background-size'),
-							position: $this.css('background-position'),
-							repeat: $this.css('background-repeat'),
-							attachment: $this.css('background-attachment')
-						},
-						x;
+				for (k in settings.images) {
 
-					// Image.
+					// Create BG.
+						$bg = document.createElement('div');
+							$bg.style.backgroundImage = 'url("' + k + '")';
+							$bg.style.backgroundPosition = settings.images[k];
+							$wrapper.appendChild($bg);
 
-						// Hack: IE8 support.
-							if (skel.vars.IEVersion <= 8)
-								bg = { image: null, size: null, position: null, repeat: null, attachment: null };
-
-						// Assign image.
-							$this
-								.css('background-image', (bg.image ? bg.image + ',' : '') + 'url("' + $img.attr('src') + '")')
-								.css('background-size', (bg.size ? bg.size + ',' : '') + 'cover')
-								.css('background-position', (bg.position ? bg.position + ',' : '') + '0% 50%')
-								.css('background-repeat', (bg.repeat ? bg.repeat + ',' : '') + 'no-repeat')
-								.css('background-attachment', (bg.attachment ? bg.attachment + ',' : '') + 'fixed');
-
-						// Hack: IE workaround because it's a crappy browser.
-							if (skel.vars.IEVersion < 12) {
-
-								x = $this.css('background-image');
-
-								$this.css('background-image', x.replace($img.attr('src'), 'invalid'));
-
-								window.setTimeout(function() {
-									$this.css('background-image', x);
-								}, 100);
-
-							}
-
-						// Hide <img>.
-							$img.hide();
-
-					// Links.
-						$body.on('click', 'a[href="#' + id + '"]', function(event) {
-
-							event.preventDefault();
-							event.stopPropagation();
-
-							switchTo($this.index());
-
-						});
-
-					// Parallax.
-						if (settings.parallax)
-							$main.on('scroll', function() {
-
-								if (skel.breakpoint('large').active
-								||	skel.vars.touch
-								||	!skel.canUse('transition')
-								||	$window.prop('orientation') == 0 || $window.prop('orientation') == 180
-								||	$window.width() < $window.height()) {
-
-									if (position)
-										$this.css('background-position', (bg.position ? bg.position + ',' : '') + position);
-									else
-										$this.css('background-position', (bg.position ? bg.position + ',' : '') + '0% 50%');
-
-								}
-								else {
-
-									var l = $this.width() * $this.index(),
-										sl = $main.scrollLeft(),
-										w = $this.width(),
-										p = ( (sl - l) / w );
-
-									$this.css('background-position', (bg.position ? bg.position + ',' : '') + (p * 100) + '% 50%');
-
-								}
-
-							});
-
-				});
-
-			// Controls.
-				$next
-					.on('touchmove', function(event) {
-						event.stopPropagation();
-						event.preventDefault();
-					})
-					.on('click', function(event) {
-						switchTo(pos + 1);
-					});
-
-				$previous
-					.on('touchmove', function(event) {
-						event.stopPropagation();
-						event.preventDefault();
-					})
-					.on('click', function(event) {
-						switchTo(pos - 1);
-					});
-
-			// Window.
-				$window
-					.on('keydown', function(event) {
-
-						var newPos = null;
-
-						switch (event.keyCode) {
-
-							// Home.
-								case 36:
-									newPos = 0;
-									break;
-
-							// End.
-								case 35:
-									newPos = $slides.length - 1;
-									break;
-
-							// Left.
-								case 37:
-									newPos = pos - 1;
-									break;
-
-							// Space, Right.
-								case 32:
-								case 39:
-									newPos = pos + 1;
-									break;
-
-						}
-
-						if (newPos !== null) {
-
-							event.stopPropagation();
-							event.preventDefault();
-
-							switchTo(newPos);
-
-						}
-
-					})
-					.on('resize orientationchange', function() {
-						setTimeout(function() {
-							switchTo(pos, true);
-						}, 0);
-					})
-					.on('load', function() {
-						setTimeout(function() {
-							$window.triggerHandler('resize');
-							switchTo(0, true);
-						}, 0);
-					});
-
-				// Parallax.
-					if (settings.parallax)
-						$window.on('resize', function() {
-							$main.triggerHandler('scroll');
-						});
-
-			// Hack: IE8 support.
-				if (skel.vars.IEVersion <= 8) {
-
-					$window.on('resize', function() {
-
-						$main
-							.css('height', $window.height());
-
-						$reel
-							.css('width', ($window.width() * $slides.length) + 'px');
-
-						$slides
-							.css('width', $window.width() + 'px');
-
-					}).triggerHandler('resize');
+					// Add it to array.
+						$bgs.push($bg);
 
 				}
 
+			// Main loop.
+				$bgs[pos].classList.add('visible');
+				$bgs[pos].classList.add('top');
+
+				// Bail if we only have a single BG or the client doesn't support transitions.
+					if ($bgs.length == 1
+					||	!canUse('transition'))
+						return;
+
+				window.setInterval(function() {
+
+					lastPos = pos;
+					pos++;
+
+					// Wrap to beginning if necessary.
+						if (pos >= $bgs.length)
+							pos = 0;
+
+					// Swap top images.
+						$bgs[lastPos].classList.remove('top');
+						$bgs[pos].classList.add('visible');
+						$bgs[pos].classList.add('top');
+
+					// Hide last image after a short delay.
+						window.setTimeout(function() {
+							$bgs[lastPos].classList.remove('visible');
+						}, settings.delay / 2);
+
+				}, settings.delay);
+
 		})();
 
-});
+	// Signup Form.
+		(function() {
+
+			// Vars.
+				var $form = document.querySelectorAll('#signup-form')[0],
+					$submit = document.querySelectorAll('#signup-form input[type="submit"]')[0],
+					$message;
+
+			// Bail if addEventListener isn't supported.
+				if (!('addEventListener' in $form))
+					return;
+
+			// Message.
+				$message = document.createElement('span');
+					$message.classList.add('message');
+					$form.appendChild($message);
+
+				$message._show = function(type, text) {
+
+					$message.innerHTML = text;
+					$message.classList.add(type);
+					$message.classList.add('visible');
+
+					window.setTimeout(function() {
+						$message._hide();
+					}, 3000);
+
+				};
+
+				$message._hide = function() {
+					$message.classList.remove('visible');
+				};
+
+			// Events.
+			// Note: If you're *not* using AJAX, get rid of this event listener.
+				$form.addEventListener('submit', function(event) {
+
+					event.stopPropagation();
+					event.preventDefault();
+
+					// Hide message.
+						$message._hide();
+
+					// Disable submit.
+						$submit.disabled = true;
+
+					// Process form.
+					// Note: Doesn't actually do anything yet (other than report back with a "thank you"),
+					// but there's enough here to piece together a working AJAX submission call that does.
+						window.setTimeout(function() {
+
+							// Reset form.
+								$form.reset();
+
+							// Enable submit.
+								$submit.disabled = false;
+
+							// Show message.
+								$message._show('success', 'Thank you!');
+								//$message._show('failure', 'Something went wrong. Please try again.');
+
+						}, 750);
+
+				});
+
+		})();
+
+})();

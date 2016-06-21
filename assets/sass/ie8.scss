@@ -4,72 +4,29 @@
 @import 'libs/skel';
 
 /*
-	Landscape by Pixelarity
-	pixelarity.com @pixelarity
+	Eventually by Pixelarity
+	html5up.net | @ajlkn
 	License: pixelarity.com/license
 */
 
-/* Button */
+/* BG */
 
-	input[type="submit"],
-	input[type="reset"],
-	input[type="button"],
-	button,
-	.button {
-		border-color: inherit !important;
+	#bg {
+		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
+	}
 
-		&.next {
-			padding-right: 2.5em;
+/* Type */
 
-			&:after {
-				display: none;
-			}
-		}
+	body, input, select, textarea {
+		color: _palette(fg-bold);
 	}
 
 /* Form */
-
-	form {
-		.field {
-			float: none;
-			padding-left: 0 !important;
-		}
-	}
 
 	input[type="text"],
 	input[type="password"],
 	input[type="email"],
 	select,
 	textarea {
-		border-color: inherit !important;
-	}
-
-/* Main */
-
-	#main {
-		.slide {
-			&:before {
-				display: none;
-			}
-		}
-
-		nav {
-			> * {
-				line-height: 2.25em;
-				width: auto;
-				padding: 0 2em;
-			}
-
-			> .next {
-				&:before {
-					content: 'Next';
-				}
-			}
-
-			> .previous {
-				&:before {
-					content: 'Prev';
-				}
-			}
-		}
+		border: solid _size(border-width) _palette(fg-bold);
 	}
